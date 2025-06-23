@@ -23,7 +23,7 @@ m <- 80
 p <- 8
 degree <- 3
 grid <- seq(-1, 3, length.out = m)
-Q <- as.matrix(bs(grid, df = p, degree = degree, intercept = FALSE))
+Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
 
 stan_data <- list(
   J       = J,

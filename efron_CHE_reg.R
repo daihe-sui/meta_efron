@@ -36,8 +36,9 @@ tau_hat <- as.vector(X %*% beta) + tau_true + error
 
 m <- 80
 p <- 8
+degree <- 3
 grid <- seq(-1, 3, length = m)
-Q <- as.matrix(bs(grid, df = p, degree = 3, intercept = FALSE))
+Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
 
 stan_data <- list(
   J = J,

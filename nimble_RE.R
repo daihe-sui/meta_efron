@@ -17,11 +17,7 @@ m <- 80 # grid length
 degree <- 3 # spline degree
 p <- 8 # degrees of freedom
 grid <- seq(-1, 3, length.out = m)
-Q <- as.matrix(bs(grid,
-  df        = p,
-  degree    = degree,
-  intercept = FALSE
-))
+Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
 
 code <- nimbleCode({
   for (k in 1:p) alpha[k] ~ dnorm(0, sd = 10)
