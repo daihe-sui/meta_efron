@@ -13,11 +13,11 @@ se2 <- runif(J, min = 0.1, max = 0.2)
 se <- sqrt(se2)
 tau_hat <- rnorm(J, mean = tau_true, sd = se)
 
-m <- 80 # grid length
-degree <- 3 # spline degree
-p <- 8 # degrees of freedom
+m <- 80
+degree <- 3
+p <- 8
 grid <- seq(-1, 3, length.out = m)
-Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
+Q <- bs(grid, df = p, degree = degree, intercept = T)
 
 code <- nimbleCode({
   for (k in 1:p) alpha[k] ~ dnorm(0, sd = 10)

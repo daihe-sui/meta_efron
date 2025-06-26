@@ -10,11 +10,11 @@ se2_j <- runif(J, min = 0.2, max = 0.5)
 tau_hat <- rnorm(J, mean = tau_true, sd = sqrt(se2_j))
 se_j <- sqrt(se2_j)
 
-m <- 80 # grid length
-degree <- 3 # spline degree
-p <- 8 # degrees of freedom
+m <- 80
+degree <- 3
+p <- 8
 grid <- seq(-1, 3, length.out = m)
-Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
+Q <- bs(grid, df = p, degree = degree, intercept = T)
 
 stan_data <- list(
   J       = J,

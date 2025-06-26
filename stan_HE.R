@@ -20,10 +20,10 @@ se <- sqrt(se2)
 tau_hat <- rnorm(J, tau_true, se)
 
 m <- 80
-p <- 8
 degree <- 3
+p <- 8
 grid <- seq(-1, 3, length.out = m)
-Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
+Q <- bs(grid, df = p, degree = degree, intercept = T)
 
 stan_data <- list(
   J       = J,

@@ -47,7 +47,7 @@ m <- 80
 degree <- 3
 p <- 8
 grid <- seq(-1, 3, length.out = m)
-Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
+Q <- bs(grid, df = p, degree = degree, intercept = T)
 
 stan_data <- list(
   J_max = J_max,

@@ -35,10 +35,10 @@ X <- matrix(rep(0:1, each = J / 2), nrow = J, ncol = q)
 tau_hat <- as.vector(X %*% beta) + tau_true + error
 
 m <- 80
-p <- 8
 degree <- 3
-grid <- seq(-1, 3, length = m)
-Q <- bs(grid, df = p, degree = degree, intercept = FALSE)
+p <- 8
+grid <- seq(-1, 3, length.out = m)
+Q <- bs(grid, df = p, degree = degree, intercept = T)
 
 stan_data <- list(
   J = J,
