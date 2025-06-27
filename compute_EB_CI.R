@@ -1,7 +1,6 @@
 rm(list = ls())
 library(rstan)
 library(splines)
-set.seed(123)
 
 J <- 200
 z <- rbinom(J, size = 1, prob = 0.8)
@@ -85,28 +84,27 @@ hessian <- fit_opt$hessian
 Sigma_alpha <- -solve(hessian)
 
 eta <- as.vector(Q %*% alpha)
-exps <- exp(eta - max(eta))
-w <- exps / sum(exps)
+w <- exp(eta - max(eta))
+w <- w / sum(w)
 mu <- fit_opt$par["mu"]
 sigma <- fit_opt$par["sigma"]
 
-# d(w)/d(alpha) = d(w)/d(eta) * d(eta)/d(alpha), where eta = Q*alpha.
+# d(w)/d(alpha) = d(w)/d(eta) * d(eta)/d(alpha), where eta = Q %*% alpha.
 # d(w)/d(eta) is the Jacobian of the softmax function: diag(w) - w * t(w).
-# d(eta)/d(alpha) is the matrix Q.
 dw_deta <- diag(w) - w %*% t(w)
 dw_dalpha <- dw_deta %*% Q
 
 # Gradient of mu w.r.t alpha.
-# Since mu = t(grid) %*% w, the chain rule gives:
-# grad(mu) = d(mu)/d(w) * d(w)/d(alpha) = t(grid) %*% dw_dalpha
+# mu = t(grid) %*% w
+# grad(mu) = d(mu)/d(w) * d(w)/d(alpha) = t(grid) %*% d(w)/d(alpha)
 grad_mu <- t(grid) %*% dw_dalpha
 
 # Gradient of sigma w.r.t alpha. Calculated via sigma^2.
 # sigma^2 = (t(grid^2) %*% w) - mu^2
-# d(sigma^2)/d(alpha) = t(grid^2) %*% d(w)/d(alpha) - 2*mu*d(mu)/d(alpha)
+# d(sigma^2)/d(alpha) = t(grid^2) %*% d(w)/d(alpha) - 2 * mu * d(mu)/d(alpha)
 grad_var <- t(grid^2) %*% dw_dalpha - 2 * mu * grad_mu
 
-# d(sigma)/d(alpha) = (1 / (2*sigma)) * d(sigma^2)/d(alpha)
+# d(sigma)/d(alpha) = (1 / (2 * sigma)) * d(sigma^2)/d(alpha)
 grad_sigma <- (1 / (2 * sigma)) * grad_var
 
 # The Delta Method formula for the variance of a function g(alpha):
