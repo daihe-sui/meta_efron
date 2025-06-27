@@ -1,6 +1,7 @@
 rm(list = ls())
 library(rstan)
 library(splines)
+set.seed(123)
 
 J <- 200
 z <- rbinom(J, size = 1, prob = 0.8)
@@ -84,7 +85,8 @@ hessian <- fit_opt$hessian
 Sigma_alpha <- -solve(hessian)
 
 eta <- as.vector(Q %*% alpha)
-w <- exp(eta) / sum(exp(eta))
+exps <- exp(eta - max(eta))
+w <- exps / sum(exps)
 mu <- fit_opt$par["mu"]
 sigma <- fit_opt$par["sigma"]
 
