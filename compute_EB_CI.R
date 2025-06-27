@@ -89,17 +89,16 @@ w <- w / sum(w)
 mu <- fit_opt$par["mu"]
 sigma <- fit_opt$par["sigma"]
 
-# d(w)/d(alpha) = d(w)/d(eta) * d(eta)/d(alpha), where eta = Q %*% alpha.
-# d(w)/d(eta) is the Jacobian of the softmax function: diag(w) - w * t(w).
+# eta = Q %*% alpha
+# d(w)/d(alpha) = d(w)/d(eta) * d(eta)/d(alpha)
+# d(w)/d(eta) = diag(w) - w * t(w) (softmax Jacobian)
 dw_deta <- diag(w) - w %*% t(w)
 dw_dalpha <- dw_deta %*% Q
 
-# Gradient of mu w.r.t alpha.
 # mu = t(grid) %*% w
-# grad(mu) = d(mu)/d(w) * d(w)/d(alpha) = t(grid) %*% d(w)/d(alpha)
+# d(mu)/d(alpha) = d(mu)/d(w) * d(w)/d(alpha) = t(grid) %*% d(w)/d(alpha)
 grad_mu <- t(grid) %*% dw_dalpha
 
-# Gradient of sigma w.r.t alpha. Calculated via sigma^2.
 # sigma^2 = (t(grid^2) %*% w) - mu^2
 # d(sigma^2)/d(alpha) = t(grid^2) %*% d(w)/d(alpha) - 2 * mu * d(mu)/d(alpha)
 grad_var <- t(grid^2) %*% dw_dalpha - 2 * mu * grad_mu
@@ -107,17 +106,13 @@ grad_var <- t(grid^2) %*% dw_dalpha - 2 * mu * grad_mu
 # d(sigma)/d(alpha) = (1 / (2 * sigma)) * d(sigma^2)/d(alpha)
 grad_sigma <- (1 / (2 * sigma)) * grad_var
 
-# The Delta Method formula for the variance of a function g(alpha):
-# Var(g(alpha)) approx t(grad(g)) %*% Sigma_alpha %*% grad(g)
+# The Delta Method formula for the variance of mu and sigma
 var_mu <- grad_mu %*% Sigma_alpha %*% t(grad_mu)
 se_mu <- sqrt(var_mu)
-
 var_sigma <- grad_sigma %*% Sigma_alpha %*% t(grad_sigma)
 se_sigma <- sqrt(var_sigma)
-
 ci_mu <- c(mu - 1.96 * se_mu, mu + 1.96 * se_mu)
 ci_sigma <- c(sigma - 1.96 * se_sigma, sigma + 1.96 * se_sigma)
-
 cat("95% CI for mu:", ci_mu, "\n")
 cat("95% CI for sigma:", ci_sigma, "\n")
 
@@ -142,14 +137,12 @@ for (j in 1:J) {
   # d(tau_eb_j)/d(w) = t(grid) %*% d(w_j)/d(w)
   dtau_eb_j_dw <- t(grid) %*% dw_j_dw
 
-  # Full gradient of tau_eb_j w.r.t alpha, using the chain rule again.
   # d(tau_eb_j)/d(alpha) = d(tau_eb_j)/d(w) * d(w)/d(alpha)
   grad_tau_eb_j <- dtau_eb_j_dw %*% dw_dalpha
 
-  # The Delta Method formula for the variance of tau_eb_j.
+  # The Delta Method formula for the variance of tau_eb_j
   var_tau_eb_j <- grad_tau_eb_j %*% Sigma_alpha %*% t(grad_tau_eb_j)
   se_tau_eb_j <- sqrt(var_tau_eb_j)
-
   tau_eb_ci[j, ] <- c(
     tau_eb[j] - 1.96 * se_tau_eb_j,
     tau_eb[j] + 1.96 * se_tau_eb_j
