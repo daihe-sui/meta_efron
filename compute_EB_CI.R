@@ -27,11 +27,11 @@ stan_data <- list(
 
 model_code <- "data {
     int<lower=1> J;
-    vector[J]    tau_hat;
+    vector[J]       tau_hat;
     vector<lower=0>[J] se;
     int<lower=1> m;
     int<lower=1> p;
-    vector[m]    grid;
+    vector[m]       grid;
     matrix[m, p] Q;
 }
 parameters {
@@ -54,7 +54,6 @@ generated quantities {
     real mu     = dot_product(grid, w);
     real sigma = sqrt(dot_product(w, square(grid - mu)));
     vector[J] tau_eb;
-    {
       for (j in 1:J) {
         vector[m] lps = log(w);
         for (i in 1:m) {
@@ -63,7 +62,6 @@ generated quantities {
         vector[m] w_j = softmax(lps);
         tau_eb[j] = dot_product(grid, w_j);
       }
-    }
 }
 "
 
