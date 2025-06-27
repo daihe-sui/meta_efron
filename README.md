@@ -1,1 +1,1 @@
-# Random-effects meta-analysis using Efron's prior
+Flexible Random-Effects Meta-Analysis Using Logspline Density Estimation
